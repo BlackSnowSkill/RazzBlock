@@ -3,9 +3,11 @@
 Простая и автономная Windows-утилита для обхода DPI блокировок (YouTube, Discord и др.) без использования VPN. Она полностью портативна, состоит из одного `.exe` файла и не оставляет мусора в системе.
 
 ## Скриншоты
-![Панель управления](screenshots/screen.png)
-![Редактор списков](screenshots/screen2.png)
-![Настройки](screenshots/screen3.png)
+<p align="center">
+  <img src="screenshots/screen.png" width="31%" alt="Панель управления" />
+  <img src="screenshots/screen2.png" width="31%" alt="Редактор списков" />
+  <img src="screenshots/screen3.png" width="31%" alt="Настройки" />
+</p>
 
 ## Особенности
 * **Один файл**: Драйвер перехвата пакетов и исполняемые файлы вшиты внутрь приложения.
