@@ -1,0 +1,499 @@
+/* Сброс стилей и общие настройки */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #FAF6F0;
+  color: #3A322D;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Ограничиваем скролл для компактного окна */
+  user-select: none;
+}
+
+/* Контейнер приложения */
+.cozy-app {
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  height: 580px;
+  background-color: #FAF6F0;
+  border: 1px solid #E6DEC3; /* Тонкая уютная рамка */
+}
+
+/* Шапка */
+.cozy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 12px 20px;
+  background-color: #F3ECE0;
+  border-bottom: 1px solid #E6DEC3;
+}
+
+.cozy-header[data-tauri-drag-region] {
+  cursor: grab;
+}
+
+.cozy-header[data-tauri-drag-region]:active {
+  cursor: grabbing;
+}
+
+.window-close-btn {
+  background: none;
+  border: none;
+  color: #8C7864;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.window-close-btn:hover {
+  background-color: #E8DECF;
+  color: #3A322D;
+}
+
+.window-close-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.app-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #3A322D;
+}
+
+.app-version {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8C7864;
+  background-color: #E7DCBC;
+  padding: 2px 6px;
+  border-radius: 20px;
+}
+
+/* Вкладки навигации */
+.cozy-nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #F7F1E7;
+  border-bottom: 1px solid #E6DEC3;
+  padding: 2px;
+}
+
+.nav-item {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8C7864;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  border-radius: 8px;
+  margin: 2px;
+}
+
+.nav-item:hover {
+  color: #3A322D;
+  background-color: #EFE6D8;
+}
+
+.nav-item.active {
+  color: #FAF6F0;
+  background-color: #8C7864; /* Приятный земляной кофейный акцент */
+}
+
+/* Основной контент */
+.cozy-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.tab-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Индикатор статуса */
+.status-card {
+  background-color: #F1E9DC;
+  border-radius: 12px;
+  padding: 14px 18px;
+  border: 1px solid #E6DEC3;
+  margin-bottom: 24px;
+}
+
+.status-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8C7864;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.status-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #8C7864;
+  transition: color 0.3s ease;
+}
+
+.status-value.connected {
+  color: #5F745B; /* Мягкий зеленый при подключении */
+}
+
+.status-value.tuning {
+  color: #A8865D; /* Песочный цвет при автоподборе */
+}
+
+/* Контейнер кнопки питания */
+.power-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0 28px 0;
+  gap: 12px;
+}
+
+/* Кнопка питания в Cozy-стиле */
+.power-button {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #EFE7DA;
+  border: 3px solid #D6CAB8;
+  color: #8C7864;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(58, 50, 45, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.power-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-color: #E8DECF;
+  border-color: #CBBCA7;
+  color: #3A322D;
+  box-shadow: 0 6px 14px rgba(58, 50, 45, 0.08);
+}
+
+.power-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(58, 50, 45, 0.04);
+}
+
+/* Активное состояние кнопки (Sage green) */
+.power-button.active {
+  background-color: #7E8F75; /* Cozy Sage Green */
+  border-color: #6C7E64;
+  color: #FAF6F0;
+  box-shadow: 0 4px 12px rgba(126, 143, 117, 0.25);
+}
+
+.power-button.active:hover {
+  background-color: #728369;
+  border-color: #5F7057;
+  box-shadow: 0 6px 16px rgba(126, 143, 117, 0.35);
+}
+
+.power-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.power-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8C7864;
+  text-align: center;
+}
+
+/* Формы и элементы управления */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #3A322D;
+}
+
+.cozy-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #FAF6F0;
+  border: 1px solid #D6CAB8;
+  border-radius: 8px;
+  color: #3A322D;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.cozy-select:focus:not(:disabled) {
+  border-color: #8C7864;
+}
+
+.cozy-select:disabled {
+  background-color: #EFEBE4;
+  color: #8C7864;
+  cursor: not-allowed;
+}
+
+.select-description {
+  font-size: 11px;
+  line-height: 14px;
+  color: #8C7864;
+  margin-top: 2px;
+}
+
+/* Спиннер для лоадинга */
+.spinner {
+  width: 32px;
+  height: 32px;
+  animation: rotate 1.5s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Настройки */
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #3A322D;
+  border-bottom: 1px solid #E6DEC3;
+  padding-bottom: 4px;
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #F1E9DC;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid #E6DEC3;
+}
+
+.setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 12px;
+}
+
+.setting-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3A322D;
+}
+
+.setting-desc {
+  font-size: 11px;
+  line-height: 13px;
+  color: #8C7864;
+}
+
+.setting-status {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5F745B;
+  background-color: #DFE8DD;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* Cozy Switch Slider */
+.cozy-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.cozy-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #D6CAB8;
+  transition: .3s;
+  border-radius: 24px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #FAF6F0;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .switch-slider {
+  background-color: #7E8F75; /* Sage green */
+}
+
+input:checked + .switch-slider:before {
+  transform: translateX(20px);
+}
+
+/* Информационная карточка */
+.cozy-info-card {
+  display: flex;
+  gap: 12px;
+  background-color: #EBE5D9;
+  border: 1px dashed #CBBCA7;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: auto;
+}
+
+.info-icon {
+  width: 18px;
+  height: 18px;
+  color: #8C7864;
+  flex-shrink: 0;
+}
+
+.info-text {
+  font-size: 11px;
+  line-height: 14px;
+  color: #5C524B;
+}
+
+/* Редактор списков */
+.editor-pane {
+  gap: 12px;
+  height: 100%;
+}
+
+.editor-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.select-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 70%;
+}
+
+.save-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8C7864;
+  margin-bottom: 10px;
+}
+
+.cozy-textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 280px;
+  padding: 12px;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 12px;
+  background-color: #F8F5EE;
+  border: 1px solid #D6CAB8;
+  border-radius: 8px;
+  color: #3A322D;
+  outline: none;
+  resize: none;
+  line-height: 16px;
+}
+
+.cozy-textarea:focus {
+  border-color: #8C7864;
+}
+
+.cozy-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #8C7864;
+  color: #FAF6F0;
+}
+
+.btn-primary:hover {
+  background-color: #7A6753;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
