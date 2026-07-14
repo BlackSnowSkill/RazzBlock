@@ -73,6 +73,22 @@ pub fn clean_temp_binaries() {
 }
 
 // Извлечение бинарных файлов и списков из ресурсов Tauri
+// Вспомогательный метод для безопасной записи временных файлов без блокировок
+fn write_temp_file(path: &Path, bytes: &[u8]) -> Result<(), String> {
+    if !path.exists() {
+        if let Err(e) = fs::write(path, bytes) {
+            // Если во время записи возникла ошибка (например, файл занят другим процессом / ядром),
+            // но файл при этом физически присутствует на диске, мы можем проигнорировать её
+            if path.exists() {
+                return Ok(());
+            }
+            return Err(format!("Failed to write {}: {}", path.display(), e));
+        }
+    }
+    Ok(())
+}
+
+// Извлечение бинарных файлов и списков из ресурсов Tauri
 pub fn extract_resources(_app_handle: &AppHandle) -> Result<(PathBuf, PathBuf), String> {
     let temp_dir = std::env::temp_dir().join("RazzBlock_Bin");
     let app_data_dir = std::env::var("APPDATA")
@@ -89,27 +105,27 @@ pub fn extract_resources(_app_handle: &AppHandle) -> Result<(PathBuf, PathBuf), 
     fs::create_dir_all(&app_data_dir).map_err(|e| format!("Failed to create app data dir: {}", e))?;
 
     // Записываем встроенные бинарные файлы
-    fs::write(temp_bin_dir.join("winws.exe"), WINWS_EXE).map_err(|e| format!("Failed to write winws.exe: {}", e))?;
-    fs::write(temp_bin_dir.join("cygwin1.dll"), CYGWIN_DLL).map_err(|e| format!("Failed to write cygwin1.dll: {}", e))?;
-    fs::write(temp_bin_dir.join("WinDivert.dll"), WINDIVERT_DLL).map_err(|e| format!("Failed to write WinDivert.dll: {}", e))?;
-    fs::write(temp_bin_dir.join("WinDivert64.sys"), WINDIVERT_SYS).map_err(|e| format!("Failed to write WinDivert64.sys: {}", e))?;
-    fs::write(temp_bin_dir.join("quic_initial_dbankcloud_ru.bin"), BIN_QUIC_1).map_err(|e| format!("Failed to write quic_initial_dbankcloud_ru.bin: {}", e))?;
-    fs::write(temp_bin_dir.join("quic_initial_www_google_com.bin"), BIN_QUIC_2).map_err(|e| format!("Failed to write quic_initial_www_google_com.bin: {}", e))?;
-    fs::write(temp_bin_dir.join("stun.bin"), BIN_STUN).map_err(|e| format!("Failed to write stun.bin: {}", e))?;
-    fs::write(temp_bin_dir.join("tls_clienthello_4pda_to.bin"), BIN_TLS_1).map_err(|e| format!("Failed to write tls_clienthello_4pda_to.bin: {}", e))?;
-    fs::write(temp_bin_dir.join("tls_clienthello_max_ru.bin"), BIN_TLS_2).map_err(|e| format!("Failed to write tls_clienthello_max_ru.bin: {}", e))?;
-    fs::write(temp_bin_dir.join("tls_clienthello_www_google_com.bin"), BIN_TLS_3).map_err(|e| format!("Failed to write tls_clienthello_www_google_com.bin: {}", e))?;
+    write_temp_file(&temp_bin_dir.join("winws.exe"), WINWS_EXE)?;
+    write_temp_file(&temp_bin_dir.join("cygwin1.dll"), CYGWIN_DLL)?;
+    write_temp_file(&temp_bin_dir.join("WinDivert.dll"), WINDIVERT_DLL)?;
+    write_temp_file(&temp_bin_dir.join("WinDivert64.sys"), WINDIVERT_SYS)?;
+    write_temp_file(&temp_bin_dir.join("quic_initial_dbankcloud_ru.bin"), BIN_QUIC_1)?;
+    write_temp_file(&temp_bin_dir.join("quic_initial_www_google_com.bin"), BIN_QUIC_2)?;
+    write_temp_file(&temp_bin_dir.join("stun.bin"), BIN_STUN)?;
+    write_temp_file(&temp_bin_dir.join("tls_clienthello_4pda_to.bin"), BIN_TLS_1)?;
+    write_temp_file(&temp_bin_dir.join("tls_clienthello_max_ru.bin"), BIN_TLS_2)?;
+    write_temp_file(&temp_bin_dir.join("tls_clienthello_www_google_com.bin"), BIN_TLS_3)?;
 
     // Записываем встроенные списки (шаблоны)
-    fs::write(temp_lists_dir.join("ipset-all.txt"), LIST_IPSET_ALL).map_err(|e| format!("Failed to write ipset-all.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("ipset-all.txt.backup"), LIST_IPSET_ALL_BACKUP).map_err(|e| format!("Failed to write ipset-all.txt.backup: {}", e))?;
-    fs::write(temp_lists_dir.join("ipset-exclude-user.txt"), LIST_IPSET_EXCLUDE_USER).map_err(|e| format!("Failed to write ipset-exclude-user.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("ipset-exclude.txt"), LIST_IPSET_EXCLUDE).map_err(|e| format!("Failed to write ipset-exclude.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("list-exclude-user.txt"), LIST_EXCLUDE_USER).map_err(|e| format!("Failed to write list-exclude-user.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("list-exclude.txt"), LIST_EXCLUDE).map_err(|e| format!("Failed to write list-exclude.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("list-general-user.txt"), LIST_GENERAL_USER).map_err(|e| format!("Failed to write list-general-user.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("list-general.txt"), LIST_GENERAL).map_err(|e| format!("Failed to write list-general.txt: {}", e))?;
-    fs::write(temp_lists_dir.join("list-google.txt"), LIST_GOOGLE).map_err(|e| format!("Failed to write list-google.txt: {}", e))?;
+    write_temp_file(&temp_lists_dir.join("ipset-all.txt"), LIST_IPSET_ALL)?;
+    write_temp_file(&temp_lists_dir.join("ipset-all.txt.backup"), LIST_IPSET_ALL_BACKUP)?;
+    write_temp_file(&temp_lists_dir.join("ipset-exclude-user.txt"), LIST_IPSET_EXCLUDE_USER)?;
+    write_temp_file(&temp_lists_dir.join("ipset-exclude.txt"), LIST_IPSET_EXCLUDE)?;
+    write_temp_file(&temp_lists_dir.join("list-exclude-user.txt"), LIST_EXCLUDE_USER)?;
+    write_temp_file(&temp_lists_dir.join("list-exclude.txt"), LIST_EXCLUDE)?;
+    write_temp_file(&temp_lists_dir.join("list-general-user.txt"), LIST_GENERAL_USER)?;
+    write_temp_file(&temp_lists_dir.join("list-general.txt"), LIST_GENERAL)?;
+    write_temp_file(&temp_lists_dir.join("list-google.txt"), LIST_GOOGLE)?;
 
     // Инициализируем пользовательские списки в %APPDATA%
     let user_lists = vec![
@@ -129,6 +145,7 @@ pub fn extract_resources(_app_handle: &AppHandle) -> Result<(PathBuf, PathBuf), 
 
     Ok((temp_dir, app_data_dir))
 }
+
 
 
 // Построение аргументов для winws.exe в зависимости от стратегии
