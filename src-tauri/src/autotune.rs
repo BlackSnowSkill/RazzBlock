@@ -52,11 +52,15 @@ pub async fn run_autotune(
             // Ждем 2.5 секунды, пока драйвер WinDivert загрузится и winws.exe инициализируется
             tokio::time::sleep(Duration::from_millis(2500)).await;
 
-            // Проверяем доступность YouTube
-            // (Тестируем как основной домен, так и HTTPS рукопожатие)
-            if test_url("https://www.youtube.com").await {
-                // Если сработало, возвращаем имя рабочей стратегии
-                // И оставляем её запущенной!
+            // Проверяем доступность YouTube и Discord одновременно
+            // Стратегия считается рабочей только если оба сервиса отвечают
+            let (youtube_ok, discord_ok) = tokio::join!(
+                test_url("https://www.youtube.com"),
+                test_url("https://discord.com")
+            );
+
+            if youtube_ok && discord_ok {
+                // Если сработало — оставляем стратегию запущенной и возвращаем её имя
                 return Ok(strategy.to_string());
             }
         }
