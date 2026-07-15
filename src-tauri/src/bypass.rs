@@ -175,8 +175,8 @@ fn get_strategy_args(
 
     // Общие базовые фильтры перехвата
     let mut args = vec![
-        format!("--wf-tcp=80,443,2053,2083,2087,2096,8443,12"),
-        format!("--wf-udp=443,19294-19344,50000-50100,12"),
+        format!("--wf-tcp=80,443,2053,2083,2087,2096,8443"),
+        format!("--wf-udp=443,19294-19344,50000-50100"),
     ];
 
     match strategy {
@@ -263,31 +263,6 @@ fn get_strategy_args(
                 format!("--dpi-desync-fake-tls={}", t_google.display()),
                 format!("--dpi-desync-fake-http={}", t_max.display()),
                 
-                format!("--new"),
-                format!("--filter-tcp=12"),
-                format!("--ipset={}", ipset_all.display()),
-                format!("--ipset-exclude={}", ipset_ex.display()),
-                format!("--ipset-exclude={}", ipset_ex_u.display()),
-                format!("--dpi-desync=fake,fakedsplit"),
-                format!("--dpi-desync-repeats=6"),
-                format!("--dpi-desync-any-protocol=1"),
-                format!("--dpi-desync-cutoff=n4"),
-                format!("--dpi-desync-fooling=ts"),
-                format!("--dpi-desync-fakedsplit-pattern=0x00"),
-                format!("--dpi-desync-fake-tls={}", stun.display()),
-                format!("--dpi-desync-fake-tls={}", t_google.display()),
-                format!("--dpi-desync-fake-http={}", t_max.display()),
-                
-                format!("--new"),
-                format!("--filter-udp=12"),
-                format!("--ipset={}", ipset_all.display()),
-                format!("--ipset-exclude={}", ipset_ex.display()),
-                format!("--ipset-exclude={}", ipset_ex_u.display()),
-                format!("--dpi-desync=fake"),
-                format!("--dpi-desync-repeats=12"),
-                format!("--dpi-desync-any-protocol=1"),
-                format!("--dpi-desync-fake-unknown-udp={}", q_dbank.display()),
-                format!("--dpi-desync-cutoff=n3"),
             ]);
         }
         "simple" => {
@@ -369,30 +344,6 @@ fn get_strategy_args(
                 format!("--dpi-desync-fake-tls={}", t_google.display()),
                 format!("--dpi-desync-fake-http={}", t_max.display()),
                 
-                format!("--new"),
-                format!("--filter-tcp=12"),
-                format!("--ipset={}", ipset_all.display()),
-                format!("--ipset-exclude={}", ipset_ex.display()),
-                format!("--ipset-exclude={}", ipset_ex_u.display()),
-                format!("--dpi-desync=fake"),
-                format!("--dpi-desync-repeats=6"),
-                format!("--dpi-desync-any-protocol=1"),
-                format!("--dpi-desync-cutoff=n4"),
-                format!("--dpi-desync-fooling=ts"),
-                format!("--dpi-desync-fake-tls={}", stun.display()),
-                format!("--dpi-desync-fake-tls={}", t_google.display()),
-                format!("--dpi-desync-fake-http={}", t_max.display()),
-                
-                format!("--new"),
-                format!("--filter-udp=12"),
-                format!("--ipset={}", ipset_all.display()),
-                format!("--ipset-exclude={}", ipset_ex.display()),
-                format!("--ipset-exclude={}", ipset_ex_u.display()),
-                format!("--dpi-desync=fake"),
-                format!("--dpi-desync-repeats=12"),
-                format!("--dpi-desync-any-protocol=1"),
-                format!("--dpi-desync-fake-unknown-udp={}", q_dbank.display()),
-                format!("--dpi-desync-cutoff=n3"),
             ]);
         }
         _ => {
@@ -470,28 +421,6 @@ fn get_strategy_args(
                 format!("--dpi-desync-split-pos=1"),
                 format!("--dpi-desync-split-seqovl-pattern={}", t_4pda.display()),
                 
-                format!("--new"),
-                format!("--filter-tcp=12"),
-                format!("--ipset={}", ipset_all.display()),
-                format!("--ipset-exclude={}", ipset_ex.display()),
-                format!("--ipset-exclude={}", ipset_ex_u.display()),
-                format!("--dpi-desync=multisplit"),
-                format!("--dpi-desync-any-protocol=1"),
-                format!("--dpi-desync-cutoff=n3"),
-                format!("--dpi-desync-split-seqovl=568"),
-                format!("--dpi-desync-split-pos=1"),
-                format!("--dpi-desync-split-seqovl-pattern={}", t_4pda.display()),
-                
-                format!("--new"),
-                format!("--filter-udp=12"),
-                format!("--ipset={}", ipset_all.display()),
-                format!("--ipset-exclude={}", ipset_ex.display()),
-                format!("--ipset-exclude={}", ipset_ex_u.display()),
-                format!("--dpi-desync=fake"),
-                format!("--dpi-desync-repeats=12"),
-                format!("--dpi-desync-any-protocol=1"),
-                format!("--dpi-desync-fake-unknown-udp={}", q_dbank.display()),
-                format!("--dpi-desync-cutoff=n2"),
             ]);
         }
     }
