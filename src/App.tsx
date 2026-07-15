@@ -98,11 +98,12 @@ function App() {
           setStatusText("Автоподбор стратегии");
 
           const strategyLabels: Record<string, string> = {
+            discord: "Тест: Discord + YouTube",
             standard: "Тест: Стандартная (Multisplit)",
             alt: "Тест: Альтернативная (ALT Fake)",
             simple: "Тест: Простая (Simple Fake)",
           };
-          const strategyOrder = ["standard", "alt", "simple"];
+          const strategyOrder = ["discord", "standard", "alt", "simple"];
           let stepIndex = 0;
           const stepInterval = setInterval(() => {
             if (stepIndex < strategyOrder.length) {
@@ -119,6 +120,7 @@ function App() {
             setIsTuning(false);
             setTuningStep("");
             const labels: Record<string, string> = {
+              discord: "Discord + YouTube",
               standard: "Стандартная",
               alt: "Альтернативная",
               simple: "Простая",
@@ -244,9 +246,10 @@ function App() {
                 onChange={(e) => setStrategy(e.target.value)}
                 disabled={isEnabled || isTuning}
               >
-                <option value="standard">Стандартная (Multisplit - по умолчанию)</option>
-                <option value="alt">Альтернативная (ALT - Fake & FakeDSplit)</option>
-                <option value="simple">Простая (Simple Fake - TLS/HTTP Fooling)</option>
+                <option value="discord">Discord + YouTube (агрессивный режим для Discord)</option>
+                <option value="standard">Стандартная (Multisplit — по умолчанию)</option>
+                <option value="alt">Альтернативная (ALT — Fake & FakeDSplit)</option>
+                <option value="simple">Простая (Simple Fake — TLS/HTTP Fooling)</option>
                 <option value="autotune">Автоподбор (Протестировать и выбрать лучшую)</option>
               </select>
               <p className="select-description">

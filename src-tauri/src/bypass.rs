@@ -174,9 +174,10 @@ fn get_strategy_args(
     let ipset_ex_u = app_data_dir.join("ipset-exclude-user.txt");
 
     // Общие базовые фильтры перехвата
+    // 50000-65535: весь диапазон голосовых портов Discord (Discord voice = динамические порты 50000-65535)
     let mut args = vec![
         format!("--wf-tcp=80,443,2053,2083,2087,2096,8443"),
-        format!("--wf-udp=443,19294-19344,50000-50100"),
+        format!("--wf-udp=443,19294-19344,50000-65535"),
     ];
 
     match strategy {
@@ -195,16 +196,17 @@ fn get_strategy_args(
                 format!("--dpi-desync-fake-quic={}", q_google.display()),
                 
                 format!("--new"),
-                format!("--filter-udp=19294-19344,50000-50100"),
+                format!("--filter-udp=19294-19344,50000-65535"),
                 format!("--filter-l7=discord,stun"),
                 format!("--dpi-desync=fake"),
+                format!("--dpi-desync-any-protocol=1"),
                 format!("--dpi-desync-fake-discord={}", q_dbank.display()),
                 format!("--dpi-desync-fake-stun={}", q_dbank.display()),
                 format!("--dpi-desync-repeats=6"),
                 
                 format!("--new"),
-                format!("--filter-tcp=2053,2083,2087,2096,8443"),
-                format!("--hostlist-domains=discord.media"),
+                format!("--filter-tcp=443,2053,2083,2087,2096,8443"),
+                format!("--hostlist-domains=discord.com,discord.gg,discord.media,discordapp.com,discordapp.net,gateway.discord.gg"),
                 format!("--dpi-desync=fake,fakedsplit"),
                 format!("--dpi-desync-repeats=6"),
                 format!("--dpi-desync-fooling=ts"),
@@ -280,16 +282,17 @@ fn get_strategy_args(
                 format!("--dpi-desync-fake-quic={}", q_google.display()),
                 
                 format!("--new"),
-                format!("--filter-udp=19294-19344,50000-50100"),
+                format!("--filter-udp=19294-19344,50000-65535"),
                 format!("--filter-l7=discord,stun"),
                 format!("--dpi-desync=fake"),
+                format!("--dpi-desync-any-protocol=1"),
                 format!("--dpi-desync-fake-discord={}", q_dbank.display()),
                 format!("--dpi-desync-fake-stun={}", q_dbank.display()),
                 format!("--dpi-desync-repeats=6"),
                 
                 format!("--new"),
-                format!("--filter-tcp=2053,2083,2087,2096,8443"),
-                format!("--hostlist-domains=discord.media"),
+                format!("--filter-tcp=443,2053,2083,2087,2096,8443"),
+                format!("--hostlist-domains=discord.com,discord.gg,discord.media,discordapp.com,discordapp.net,gateway.discord.gg"),
                 format!("--dpi-desync=fake"),
                 format!("--dpi-desync-repeats=6"),
                 format!("--dpi-desync-fooling=ts"),
@@ -346,7 +349,82 @@ fn get_strategy_args(
                 
             ]);
         }
-        _ => {
+        "discord" => {
+            // Стратегия DISCORD — агрессивный обход специально для Discord
+            // Перехватываем весь UDP диапазон Discord + TCP с domain-фильтром
+            args.extend(vec![
+                // === UDP: Discord Voice (QUIC/UDP 50000-65535) ===
+                format!("--filter-udp=50000-65535"),
+                format!("--filter-l7=discord"),
+                format!("--dpi-desync=fake"),
+                format!("--dpi-desync-any-protocol=1"),
+                format!("--dpi-desync-fake-discord={}", q_dbank.display()),
+                format!("--dpi-desync-repeats=8"),
+
+                // === UDP: STUN (NAT traversal Discord) ===
+                format!("--new"),
+                format!("--filter-udp=3478,3479,19302-19309"),
+                format!("--filter-l7=stun"),
+                format!("--dpi-desync=fake"),
+                format!("--dpi-desync-any-protocol=1"),
+                format!("--dpi-desync-fake-stun={}", q_dbank.display()),
+                format!("--dpi-desync-repeats=8"),
+
+                // === UDP: Discord video/screen share ===
+                format!("--new"),
+                format!("--filter-udp=19294-19344"),
+                format!("--filter-l7=discord,stun"),
+                format!("--dpi-desync=fake"),
+                format!("--dpi-desync-any-protocol=1"),
+                format!("--dpi-desync-fake-discord={}", q_dbank.display()),
+                format!("--dpi-desync-fake-stun={}", q_dbank.display()),
+                format!("--dpi-desync-repeats=8"),
+
+                // === UDP QUIC: Discord на 443 ===
+                format!("--new"),
+                format!("--filter-udp=443"),
+                format!("--hostlist-domains=discord.com,discord.gg,discordapp.com,discordapp.net,gateway.discord.gg"),
+                format!("--dpi-desync=fake"),
+                format!("--dpi-desync-repeats=6"),
+                format!("--dpi-desync-fake-quic={}", q_google.display()),
+
+                // === TCP: Discord сайт и шлюз (все домены) ===
+                format!("--new"),
+                format!("--filter-tcp=443,2053,2083,2087,2096,8443"),
+                format!("--hostlist-domains=discord.com,discord.gg,discord.media,discordapp.com,discordapp.net,gateway.discord.gg"),
+                format!("--dpi-desync=multisplit"),
+                format!("--dpi-desync-split-seqovl=681"),
+                format!("--dpi-desync-split-pos=1"),
+                format!("--dpi-desync-split-seqovl-pattern={}", t_google.display()),
+
+                // === YouTube и остальные сайты (Стандарт) ===
+                format!("--new"),
+                format!("--filter-udp=443"),
+                format!("--hostlist={}", l_general.display()),
+                format!("--hostlist={}", l_general_u.display()),
+                format!("--hostlist-exclude={}", l_exclude.display()),
+                format!("--hostlist-exclude={}", l_exclude_u.display()),
+                format!("--ipset-exclude={}", ipset_ex.display()),
+                format!("--ipset-exclude={}", ipset_ex_u.display()),
+                format!("--dpi-desync=fake"),
+                format!("--dpi-desync-repeats=6"),
+                format!("--dpi-desync-fake-quic={}", q_google.display()),
+
+                format!("--new"),
+                format!("--filter-tcp=80,443"),
+                format!("--hostlist={}", l_general.display()),
+                format!("--hostlist={}", l_general_u.display()),
+                format!("--hostlist-exclude={}", l_exclude.display()),
+                format!("--hostlist-exclude={}", l_exclude_u.display()),
+                format!("--ipset-exclude={}", ipset_ex.display()),
+                format!("--ipset-exclude={}", ipset_ex_u.display()),
+                format!("--dpi-desync=multisplit"),
+                format!("--dpi-desync-split-seqovl=568"),
+                format!("--dpi-desync-split-pos=1"),
+                format!("--dpi-desync-split-seqovl-pattern={}", t_4pda.display()),
+            ]);
+        }
+        "standard" | _ => {
             // Стандартная стратегия (по умолчанию - multisplit)
             args.extend(vec![
                 format!("--filter-udp=443"),
@@ -361,16 +439,17 @@ fn get_strategy_args(
                 format!("--dpi-desync-fake-quic={}", q_google.display()),
                 
                 format!("--new"),
-                format!("--filter-udp=19294-19344,50000-50100"),
+                format!("--filter-udp=19294-19344,50000-65535"),
                 format!("--filter-l7=discord,stun"),
                 format!("--dpi-desync=fake"),
+                format!("--dpi-desync-any-protocol=1"),
                 format!("--dpi-desync-fake-discord={}", q_dbank.display()),
                 format!("--dpi-desync-fake-stun={}", q_dbank.display()),
                 format!("--dpi-desync-repeats=6"),
                 
                 format!("--new"),
-                format!("--filter-tcp=2053,2083,2087,2096,8443"),
-                format!("--hostlist-domains=discord.media"),
+                format!("--filter-tcp=443,2053,2083,2087,2096,8443"),
+                format!("--hostlist-domains=discord.com,discord.gg,discord.media,discordapp.com,discordapp.net,gateway.discord.gg"),
                 format!("--dpi-desync=multisplit"),
                 format!("--dpi-desync-split-seqovl=681"),
                 format!("--dpi-desync-split-pos=1"),

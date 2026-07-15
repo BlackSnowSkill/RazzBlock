@@ -35,7 +35,7 @@ pub async fn run_autotune(
     // 1. Распаковываем файлы во временную папку
     let (temp_dir, app_data_dir) = extract_resources(&app_handle)?;
 
-    let strategies = vec!["standard", "alt", "simple"];
+    let strategies = vec!["discord", "standard", "alt", "simple"];
     
     for strategy in strategies {
         // Останавливаем предыдущую попытку, если она была
