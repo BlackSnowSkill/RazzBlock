@@ -9,6 +9,7 @@ function App() {
   const [isEnabled, setIsEnabled] = useState(false);
   const [statusText, setStatusText] = useState("Отключено");
   const [isTuning, setIsTuning] = useState(false);
+  const [tuningStep, setTuningStep] = useState("");
   
   // Настройки
   const [strategy, setStrategy] = useState("standard"); // standard, alt, simple, autotune
@@ -93,19 +94,45 @@ function App() {
       try {
         if (strategy === "autotune") {
           setIsTuning(true);
-          setStatusText("Подбираем стратегию обхода...");
+          setTuningStep("Инициализация...");
+          setStatusText("Автоподбор стратегии");
+
+          const strategyLabels: Record<string, string> = {
+            standard: "Тест: Стандартная (Multisplit)",
+            alt: "Тест: Альтернативная (ALT Fake)",
+            simple: "Тест: Простая (Simple Fake)",
+          };
+          const strategyOrder = ["standard", "alt", "simple"];
+          let stepIndex = 0;
+          const stepInterval = setInterval(() => {
+            if (stepIndex < strategyOrder.length) {
+              setTuningStep(strategyLabels[strategyOrder[stepIndex]] ?? "");
+              stepIndex++;
+            }
+          }, 2800);
+
           try {
             const workingStrategy = await invoke<string>("run_autotune");
+            clearInterval(stepInterval);
             setStrategy(workingStrategy);
             setIsEnabled(true);
             setIsTuning(false);
-            setStatusText(`Подключено (${workingStrategy})`);
+            setTuningStep("");
+            const labels: Record<string, string> = {
+              standard: "Стандартная",
+              alt: "Альтернативная",
+              simple: "Простая",
+            };
+            setStatusText(`Обход активен — ${labels[workingStrategy] ?? workingStrategy}`);
           } catch (err: any) {
+            clearInterval(stepInterval);
             setIsTuning(false);
             setIsEnabled(false);
+            setTuningStep("");
             setStatusText("Не удалось подобрать стратегию");
             alert(err);
           }
+
         } else {
           setStatusText("Запуск обхода...");
           await invoke("start_bypass", { strategy });
@@ -195,8 +222,17 @@ function App() {
                 )}
               </button>
               <span className="power-hint">
-                {isEnabled ? "Нажмите, чтобы выключить" : isTuning ? "Идет тестирование..." : "Нажмите для включения"}
+                {isEnabled ? "Нажмите, чтобы выключить" : isTuning ? "Идёт тестирование стратегий..." : "Нажмите для включения"}
               </span>
+              {isTuning && tuningStep && (
+                <span className="tuning-step">⟳ {tuningStep}</span>
+              )}
+              {isEnabled && !isTuning && (
+                <span className="connected-badge">
+                  <span className="badge-dot" />
+                  YouTube ✓ &nbsp; Discord ✓
+                </span>
+              )}
             </div>
 
             {/* Выбор стратегии обхода */}
